@@ -13,7 +13,7 @@ const server = createServer(app);
 
 // Enable CORS for Express
 app.use(cors({
-    origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:3000"], 
+    origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:5173"], 
     methods: ["GET", "POST"],
     credentials: true,
 }));
@@ -22,7 +22,7 @@ app.use(express.json());
 
 const io = new Server(server, {
     cors: {
-        origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:3000"], 
+        origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:5173"], 
         methods: ["GET", "POST"],
         credentials: true,
     }

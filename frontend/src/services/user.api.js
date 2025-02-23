@@ -1,5 +1,5 @@
 import axios from 'axios';
-const url = 'http://localhost:8080/api'
+const url = 'https://team-pumpkin-assignment.onrender.com/api'
 
 export const getAllUsers = async () => {
     try {
