@@ -10,42 +10,48 @@ import userRoutes from './routes/user.routes.js';
 dotenv.config();
 const app = express();
 const server = createServer(app);
-const io = new Server(server,{
+
+// Enable CORS for Express
+app.use(cors({
+    origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:3000"], 
+    methods: ["GET", "POST"],
+    credentials: true,
+}));
+
+app.use(express.json());
+
+const io = new Server(server, {
     cors: {
-        origin: "https://team-pumpkin-assignment.vercel.app",
+        origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:3000"], 
         methods: ["GET", "POST"],
+        credentials: true,
     }
 });
-
-
-// app.use(cors());
-app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
 
 connectDb().then(() => {
     app.get('/', (req, res) => {
         res.send('Hello World');
-    })
+    });
 
     app.use('/api/auth', authRoutes);
-    app.use('/api/users', userRoutes)
-
-})
+    app.use('/api/users', userRoutes);
+});
 
 let onlineUsers = new Map();
 io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.id}`);
 
     socket.on('user-online', (userId) => {
         onlineUsers.set(userId, socket.id);
         io.emit('online-users', Array.from(onlineUsers.keys()));
-    })
+    });
 
     socket.on('send-message', ({ senderId, receiverId, message }) => {
         const receiverSocketId = onlineUsers.get(receiverId);
         if (receiverSocketId) {
             socket.to(receiverSocketId).emit('receive-message', { senderId, message });
         }
-    })
+    });
 
     socket.on("disconnect", () => {
         const userId = [...onlineUsers.entries()].find(([_, id]) => id === socket.id)?.[0];
@@ -55,9 +61,8 @@ io.on('connection', (socket) => {
         }
         console.log("User disconnected:", socket.id);
     });
+});
 
-})
-
-server.listen(process.env.PORT, () => {
-    console.log(`Server is running: http://localhost:${process.env.PORT}`);
-})
+server.listen(process.env.PORT || 8080, () => {
+    console.log(`Server is running: http://localhost:${process.env.PORT || 8080}`);
+});
