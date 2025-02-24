@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { connectDb } from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
-
+import { chatSocket } from './socket/index.js';
 dotenv.config();
 const app = express();
 const server = createServer(app);
@@ -37,31 +37,7 @@ connectDb().then(() => {
     app.use('/api/users', userRoutes);
 });
 
-let onlineUsers = new Map();
-io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.id}`);
-
-    socket.on('user-online', (userId) => {
-        onlineUsers.set(userId, socket.id);
-        io.emit('online-users', Array.from(onlineUsers.keys()));
-    });
-
-    socket.on('send-message', ({ senderId, receiverId, message }) => {
-        const receiverSocketId = onlineUsers.get(receiverId);
-        if (receiverSocketId) {
-            socket.to(receiverSocketId).emit('receive-message', { senderId, message });
-        }
-    });
-
-    socket.on("disconnect", () => {
-        const userId = [...onlineUsers.entries()].find(([_, id]) => id === socket.id)?.[0];
-        if (userId) {
-            onlineUsers.delete(userId);
-            io.emit("online-users", Array.from(onlineUsers.keys())); // Update online users
-        }
-        console.log("User disconnected:", socket.id);
-    });
-});
+chatSocket(io);
 
 server.listen(process.env.PORT || 8080, () => {
     console.log(`Server is running: http://localhost:${process.env.PORT || 8080}`);

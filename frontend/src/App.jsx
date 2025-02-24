@@ -1,9 +1,19 @@
-import AuthForm from "./pages/AuthForm.jsx";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AuthForm from './pages/AuthForm.jsx'
 import ChatPage from "./pages/ChatPage.jsx";
-function App() {
-  const loggedInUserId = localStorage.getItem("userId");
+import { SnackbarProvider } from "notistack";
 
-  return <>{loggedInUserId ? <ChatPage /> : <AuthForm />}</>;
+function App() {
+  return (
+    <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<AuthForm />} />
+          <Route path="/chat" element={<ChatPage />} />
+        </Routes>
+      </Router>
+    </SnackbarProvider>
+  );
 }
 
 export default App;

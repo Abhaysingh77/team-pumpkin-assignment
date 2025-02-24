@@ -4,6 +4,7 @@ const verifyOtp = async (req, res, next) => {
     const {email, otp} = req.body;
     try{
         const isOtp = await OTP.findOne({email, otp});
+        console.log(isOtp)
         if(isOtp){
            await next();
         }else{

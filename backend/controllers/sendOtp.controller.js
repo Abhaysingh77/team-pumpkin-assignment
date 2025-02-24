@@ -5,6 +5,7 @@ import { OTP } from '../models/otp.model.js';
 const sendOtp = async (req, res) => {
     const { email } = req.body;
     const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, digits: true, lowerCaseAlphabets: false });
+
     try {
         const isOtp = await OTP.findOne({email});
         if(isOtp){
@@ -26,6 +27,7 @@ const sendOtp = async (req, res) => {
             subject: 'OTP Verification',
             text: `Your OTP is: ${otp} , Valid for 5 minutes only`
         })
+        
         res.status(200).send({ message: "OTP sent successfully" });
     } catch (err) {
         res.status(500).send({ message: err.message });

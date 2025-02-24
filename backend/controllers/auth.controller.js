@@ -1,10 +1,10 @@
 import { User } from '../models/user.model.js';
-
+import jwt from 'jsonwebtoken';
 const authController = {
    
     login: async (req, res) => {
         const { email } = req.body;
-
+        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
         try {
             const user = await User.findOne({ email });
 
@@ -12,7 +12,7 @@ const authController = {
                 return res.status(400).json({ message: "User not found. Please register first." });
             }
 
-            res.status(200).json({ message: "User logged in successfully", user });
+            res.status(200).json({ message: "User logged in successfully", user, token });
         } catch (error) {
             res.status(500).json({ message: "Server error", error: error.message });
         }
