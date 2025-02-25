@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 
 const ChatWindow = ({ selectedUser, toggleProfile, setMessages, messages, socket }) => {
   const userId = localStorage.getItem("userId");
-  // const socket = io("http://localhost:8080");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -16,7 +15,6 @@ const ChatWindow = ({ selectedUser, toggleProfile, setMessages, messages, socket
   
     socket.on("receive-message", handleMessage);
   
-    
   }, [socket, selectedUser]);
   
 
@@ -47,27 +45,31 @@ const ChatWindow = ({ selectedUser, toggleProfile, setMessages, messages, socket
             <span className="font-semibold">{selectedUser.name}</span>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  msg.senderId === userId ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`rounded-lg px-4 py-2 max-w-xs my-1 ${
-                    msg.senderId === userId
-                      ? "bg-blue-100 text-blue-900"
-                      : "bg-gray-100"
-                  }`}
-                >
-                  <p>{msg.message}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date().toLocaleTimeString()}
-                  </p>
-                </div>
-              </div>
-            ))}
+            {messages.map((msg, index) => {
+              if(msg.receiverId === selectedUser._id || msg.senderId === selectedUser._id) {
+                return (
+                  <div
+                    key={index}
+                    className={`flex ${
+                      msg.senderId === userId ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`rounded-lg px-4 py-2 max-w-xs my-1 ${
+                        msg.senderId === userId
+                          ? "bg-blue-100 text-blue-900"
+                          : "bg-gray-100"
+                      }`}
+                    >
+                      <p>{msg.message}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(msg.timestamp).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
+                )
+              }
+            })}
           </div>
           <form
             onSubmit={sendMessage}

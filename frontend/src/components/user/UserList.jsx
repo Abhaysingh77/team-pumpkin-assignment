@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { getAllUsers } from "../../services/user.api";
 import { enqueueSnackbar } from "notistack";
 
-export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket }) => {
+export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket, messages }) => {
 
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [users, setUsers] = useState([]);
@@ -105,7 +105,7 @@ export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket }) =
                     <span className="text-xs text-gray-500">8:30 pm</span>
                   </div>
                   <p className="text-sm text-gray-500 truncate">
-                    {user.lastMessage || "No messages yet"}
+                    { messages.filter((msg)=>msg.senderId === user._id).length + " Messages" || "No messages yet"}
                   </p>
                 </div>
                 {onlineUsers.includes(user._id) && (
@@ -125,4 +125,5 @@ UsersList.propTypes = {
   selectUser: PropTypes.func.isRequired,
   toggleProfile: PropTypes.func.isRequired,
   socket: PropTypes.object.isRequired,
+  messages: PropTypes.array.isRequired,
 };

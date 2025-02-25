@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import io from "socket.io-client";
 import { UsersList } from "../components/user/UserList";
 import ChatWindow from "../components/chat-page/ChatWindow";
@@ -13,15 +13,25 @@ function ChatPage() {
   const [showProfile, setShowProfile] = useState(false);
   const userId = localStorage.getItem("userId");
 
+  useEffect(() => {
+    // Listen for stored messages once when the component mounts
+    socket.on("stored-messages", ( messages ) => {
+        console.log("Received stored messages:", messages);
+        setMessages(messages||[]);
+    });
+
+    return () => {
+        socket.off("stored-messages"); // Clean up listener on unmount
+    };
+}, [selectedUser]);
+
+
   const selectUser = (user) => {
     if (!user) return;
 
     localStorage.setItem("selectedUserId", user._id);
     setSelectedUser(user);
-
     socket.emit("join-room", { senderId: userId, receiverId: user._id }); // Ensure the receiver is in the room
-
-    setMessages([]);
   };
 
   const toggleProfile = () => {
@@ -35,6 +45,7 @@ function ChatPage() {
         selectUser={selectUser}
         toggleProfile={toggleProfile}
         socket={socket}
+        messages={messages}
       />
       <ChatWindow
         selectedUser={selectedUser}

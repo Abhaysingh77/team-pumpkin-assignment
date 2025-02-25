@@ -33,8 +33,8 @@ export default function AuthForm() {
         }
       } else {
         enqueueSnackbar("Registering user...", { variant: "info" });
-        await registerUser(formData);
-        enqueueSnackbar("Registration Successful! Please log in.", { variant: "success" });
+        const message = await registerUser(formData);
+        enqueueSnackbar(message);
         setIsLogin(true);
       }
     } catch (error) {
