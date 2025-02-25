@@ -4,8 +4,8 @@ import { UsersList } from "../components/user/UserList";
 import ChatWindow from "../components/chat-page/ChatWindow";
 import ProfileSidebar from "../components/chat-page/ProfileSidebar";
 
-// const socket = io("http://localhost:8080");
-const socket = io("https://team-pumpkin-assignment.onrender.com")
+const socket = io("http://localhost:8080");
+// const socket = io("https://team-pumpkin-assignment.onrender.com")
 
 function ChatPage() {
   const [messages, setMessages] = useState([]);

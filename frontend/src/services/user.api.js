@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const url = "https://team-pumpkin-assignment.onrender.com/api";
-// const url = "http://localhost:8080/api"
+// const url = "https://team-pumpkin-assignment.onrender.com/api";
+const url = "http://localhost:8080/api"
 
 
 export const getAllUsers = async (token) => {

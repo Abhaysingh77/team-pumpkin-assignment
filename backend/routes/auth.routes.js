@@ -5,7 +5,7 @@ import verifyOtp from "../middlewares/verifyOtp.middleware.js";
 
 
 const router = Router();
-router.post('/register',authController.register )
+router.post('/register', authController.register )
 router.post('/login/send-otp', sendOtpController)
 router.post('/login/verify-otp', verifyOtp, authController.login);
 
