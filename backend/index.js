@@ -12,23 +12,25 @@ dotenv.config();
 
 const app = express();
 const server = createServer(app);
+app.use(express.json());
 
 // Enable CORS for Express
 app.use(cors({
-    origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:5173"], 
-    methods: ["GET", "POST"],
-    credentials: true,
+    origin: "*",  // Allow all origins (for testing, later restrict to specific domains)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
 }));
-
-app.use(express.json());
 
 const io = new Server(server, {
     cors: {
-        origin: ["https://team-pumpkin-assignment.vercel.app", "http://localhost:5173"], 
+        origin: "*",  // Allow all origins (change later for security)
         methods: ["GET", "POST"],
-        credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true
     }
 });
+
 
 connectDb().then(() => {
     app.get('/', (req, res) => {
