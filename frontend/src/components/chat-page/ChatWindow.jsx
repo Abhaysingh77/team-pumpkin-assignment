@@ -7,7 +7,7 @@ const ChatWindow = ({ selectedUser, toggleProfile, setMessages, messages, socket
 
   useEffect(() => {
     if (!socket || !selectedUser) return;
-  
+
     const handleMessage = (msg) => {
       console.log("Received message: ", msg);
       setMessages((prev) => [...prev, msg]);

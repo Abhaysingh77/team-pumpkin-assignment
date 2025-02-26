@@ -4,8 +4,8 @@ import { UsersList } from "../components/user/UserList";
 import ChatWindow from "../components/chat-page/ChatWindow";
 import ProfileSidebar from "../components/chat-page/ProfileSidebar";
 
-const socket = io("http://localhost:8080");
-// const socket = io("https://team-pumpkin-assignment.onrender.com")
+// const socket = io("http://localhost:8080");
+const socket = io("https://team-pumpkin-assignment.onrender.com")
 
 function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -15,16 +15,15 @@ function ChatPage() {
 
   useEffect(() => {
     // Listen for stored messages once when the component mounts
-    socket.on("stored-messages", ( messages ) => {
-        console.log("Received stored messages:", messages);
-        setMessages(messages||[]);
+    socket.on("stored-messages", (messages) => {
+      console.log("Received stored messages:", messages);
+      setMessages(messages || []);
     });
 
     return () => {
-        socket.off("stored-messages"); // Clean up listener on unmount
+      socket.off("stored-messages"); // Clean up listener on unmount
     };
-}, [selectedUser]);
-
+  }, [selectedUser]);
 
   const selectUser = (user) => {
     if (!user) return;
