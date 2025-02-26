@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-
+import { formatTime } from "../../util/formatTime";
 const ChatWindow = ({ selectedUser, toggleProfile, setMessages, messages, socket }) => {
   const userId = localStorage.getItem("userId");
   const [message, setMessage] = useState("");
@@ -63,7 +63,7 @@ const ChatWindow = ({ selectedUser, toggleProfile, setMessages, messages, socket
                     >
                       <p>{msg.message}</p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {new Date(msg.timestamp).toLocaleTimeString()}
+                        {msg.timestamp ?  formatTime(msg.timestamp) : "now"}
                       </p>
                     </div>
                   </div>

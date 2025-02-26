@@ -7,7 +7,9 @@ import { connectDb } from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import { chatSocket } from './socket/index.js';
+
 dotenv.config();
+
 const app = express();
 const server = createServer(app);
 
@@ -42,3 +44,4 @@ chatSocket(io);
 server.listen(process.env.PORT || 8080, () => {
     console.log(`Server is running: http://localhost:${process.env.PORT || 8080}`);
 });
+

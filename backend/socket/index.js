@@ -1,4 +1,5 @@
 import Message from "../models/message.model.js";
+
 export const chatSocket = (io) => {
     let onlineUsers = new Map();
 
@@ -15,7 +16,7 @@ export const chatSocket = (io) => {
                     $or: [{ senderId: userId }, { receiverId: userId }]
                 }).sort({ timestamp: 1 });
         
-                console.log(`Sending stored messages to ${userId}:`, messages);
+                // console.log(`Sending stored messages to ${userId}:`, messages);
         
                 // Send stored messages only to the specific user
                 socket.emit("stored-messages", messages);
@@ -35,7 +36,7 @@ export const chatSocket = (io) => {
         });
         
 
-        socket.on("send-message", async({ senderId, receiverId, message }) => {
+        socket.on("send-message", async({senderId, receiverId, message }) => {
             const room = [senderId, receiverId].sort().join("-");
             console.log(`Sending message from ${senderId} to ${receiverId} in room ${room}: ${message}`);
         

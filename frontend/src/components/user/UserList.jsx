@@ -2,28 +2,52 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { getAllUsers } from "../../services/user.api";
 import { enqueueSnackbar } from "notistack";
+import { debounce } from "../../util/debounce";
 
-export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket, messages }) => {
-
+export const UsersList = ({
+  selectedUser,
+  selectUser,
+  toggleProfile,
+  socket,
+  messages,
+}) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
-  useEffect(() => {
+  const handleSearch = (e) => {
+    try {
+      const searchString = e.target.value;
+      if(searchString === ""){
+        setFilteredUsers(users);
+        return;
+      }
 
-    socket.emit('user-online', userId);
-    
+      const filtered = users.filter((user) =>
+        user.name.toLowerCase().includes(searchString.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  } catch (err) {
+    console.log(err);
+  }
+};
+const debouncedSearch = debounce(handleSearch, 500);
+  
+
+  useEffect(() => {
+    socket.emit("user-online", userId);
+
     socket.on("online-users", (users) => {
-        console.log("Updated online users:", users);
-        setOnlineUsers(users);
+      console.log("Updated online users:", users);
+      setOnlineUsers(users);
     });
 
     return () => {
-        socket.off("online-users");
+      socket.off("online-users");
     };
-}, [socket]);
-
+  }, [socket]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -31,6 +55,7 @@ export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket, mes
         const response = await getAllUsers(token);
         if (response) {
           setUsers(response.users);
+          setFilteredUsers(response.users);
         } else {
           enqueueSnackbar(response.message || "Failed to fetch users", {
             variant: "error",
@@ -42,14 +67,14 @@ export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket, mes
     };
     fetchUsers();
   }, []);
-  
+
   return (
     <div className="w-80 border-r border-[#D9DCE0]  flex flex-col">
       <div className="p-4 border-b border-[#D9DCE0]">
         <div className="flex items-center gap-2 mb-4">
           <div className="">
             <img
-              src="../../../public/image 66.png"
+              src="/image 66.png"
               alt="logo"
               width={100}
               height={100}
@@ -58,6 +83,7 @@ export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket, mes
         </div>
         <div className="relative">
           <input
+            onChange={debouncedSearch}
             type="text"
             placeholder="Search"
             className="w-full p-2 pl-8 border border-[#D9DCE0] rounded-md"
@@ -79,7 +105,7 @@ export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket, mes
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {users.map((user, index) => {
+        {filteredUsers.map((user, index) => {
           if (user._id !== userId) {
             return (
               <div
@@ -105,7 +131,8 @@ export const UsersList = ({ selectedUser, selectUser, toggleProfile, socket, mes
                     <span className="text-xs text-gray-500">8:30 pm</span>
                   </div>
                   <p className="text-sm text-gray-500 truncate">
-                    { messages.filter((msg)=>msg.senderId === user._id).length + " Messages" || "No messages yet"}
+                    {messages.filter((msg) => msg.senderId === user._id)
+                      .length + " Messages" || "No messages yet"}
                   </p>
                 </div>
                 {onlineUsers.includes(user._id) && (
